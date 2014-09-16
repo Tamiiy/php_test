@@ -7,19 +7,17 @@
 <body>
 <?php
     $user = array(
-        'ニックネーム' => $_POST['nickname'],
-        'email' => $_POST['email'],
-        'ご意見' => $_POST['goiken']
+        'ニックネーム' => htmlspecialchars($_POST['nickname']),
+        'email' => htmlspecialchars($_POST['email']),
+        'ご意見' => htmlspecialchars($_POST['goiken'])
     );
 
-    // $nickname = $_POST['nickname'];
-    // $email = $_POST['email'];
-    // $goiken = $_POST['goiken'];
+    $flag = 0;
 
     foreach ($user as $key => $value){
         if ($value == null) {
-            echo '<font color="red">入力されていない項目があります</font>';
-            echo '<input type="button" value="戻る" onClick="history.back()">'.'<br/>';
+            echo '<font color="red">入力されていない項目があります</font><br/>';
+            $flag = 1;
             break;
         }
     }
@@ -33,33 +31,23 @@
             echo $key.'：'.$value.'<br/>';
         }
     }
-
-    // if ($nickname == null) {
-    //     $error[0] = "ニックネーム";
-    // }
-    // else if($email == null){
-    //     $error[1] = "email";
-    // }
-    // else if($goiken == null){
-    //     $error[3] = "key"
-    // }
-    // else
-        // echo '<color="red">ニックネームが入力されていません'."\n";
-        // echo '<input type="button" value="戻る" onClick="history.back()">';
-    // }
-    //     echo "ようこそ、";
-    //     echo $nickname."様。"; //スーパーグローバル変数.実は連想配列
-    // }
-
-    // if ($nickname == null) {
-    //     echo "ニックネームが入力されていません\n";
-    //     echo '<input type="button" value="戻る" onClick="history.back()">';
-    // }
-    // else {
-    //     echo $_POST['nickname']."様。"; //スーパーグローバル変数.実は連想配列
-    // }
-
-
 ?>
+
+<form method="post" action="thanks.php">
+    <?php
+    //POSTを使って渡す方法
+        echo '<input name="nickname" type="hidden" value='.$_POST['nickname'].'>';
+        echo '<input name="email" type="hidden" value="'.$_POST['email'].'">';
+        echo '<input name="goiken" type="hidden" value='.$_POST['goiken'].'>';
+        echo '<input type="button" value="戻る" onClick="history.back()">';
+        if ($flag) {
+            //OKは出力しない
+        }
+        else {
+            echo '<input type="submit" value="OK">';
+        }
+    ?>
+</form>
+
 </body>
 </html>
