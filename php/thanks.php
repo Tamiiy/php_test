@@ -21,11 +21,12 @@
 
 <?php
     echo '頂いたご意見『'.$goiken.'』<br/>';
-    echo $email.'にメールを送りましたので、ご確認ください。';
+    echo $email.'にメールを送りましたので、ご確認ください。<br/><br/>';
+    echo '<a href="index.php">TOPへ</a>';
 
     $sql = 'INSERT INTO `phpkiso`.`survey` (`nickname`, `email`, `goiken`) VALUES ("'.$nickname.'","'.$email.'","'.$goiken.'");';
     // $sql = 'INSERT INTO survey(nickname,email,goiken)VALUES("'.$nickname.'","'.$email.'","'.$goiken'")';
-    echo $sql;
+    // echo $sql;
     $stmt = $dbh->prepare($sql);
     $stmt->execute();
 

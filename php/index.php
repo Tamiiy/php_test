@@ -50,5 +50,77 @@
     <br/>
     <input type="submit" value="送信">
 </form>
+
+<p>
+<?php
+    $dsn = 'mysql:dbname=phpkiso;host=localhost'; //Data Source Name
+    $user = 'root';
+    $password = 'camp2014';
+    $dbh = new PDO ($dsn, $user, $password); //Data Base Hundle
+    $dbh->query('SET NAMES utf8');
+
+    $sql = 'select * from survey';
+    $stmt = $dbh->prepare($sql);
+    $stmt->execute();
+
+    //データの集合を結果セットという.surveyの全てのデータが結果セットになっている
+
+    while(1){
+         $rec = $stmt->fetch(PDO::FETCH_ASSOC);
+         //fetchは、データをひとつひとつとってくる、というDB用語
+         if($rec == false) { //データがなくなると、自動的にfalseを返す
+            break;
+         }
+         echo $rec['code'].' | ';
+         echo $rec['nickname'].' | ';
+         echo $rec['email'].' | ';
+         echo $rec['goiken'];
+         echo '<br/>';
+    }
+?>
+
+<form method="post" action="index.php">
+    <input type="text" name="search" placeholder="Email検索">
+    <input type="submit" value="検索">
+</form>
+
+<?php
+    //$search = $_POST['search']; エラーが出ちゃうので廃止
+    // echo $search.'<br/>';
+    // $sql = 'SELECT * FROM survey WHERE email like \'%'.$search.'%\'';
+    // echo $sql.'<br/>';
+    // $stmt = $dbh->prepare($sql);
+    // $stmt->execute();
+    //データの集合を結果セットという.surveyの全てのデータが結果セットになっている
+
+
+    //先生の回答
+    if(!isset($_POST['search'])){ //!isset:値がfalseだったら
+        $sql .= ';'; //sqlの末尾に';'を連結
+        //$sql = $sql.';'; と同じ
+        echo '＊検索結果がここに表示されます';
+    }else {
+        $sql .= ' WHERE email like \'%'.$_POST['search'].'%\';';
+        // echo $sql.'<br/>';
+        $stmt = $dbh->prepare($sql);
+        $stmt->execute();
+        echo '＊検索結果<br/>';
+        while(1){
+             $rec = $stmt->fetch(PDO::FETCH_ASSOC);
+             //fetchは、データをひとつひとつとってくる、というDB用語
+             if($rec == false) { //データがなくなると、自動的にfalseを返す
+                break;
+             }
+             echo $rec['code'].' | ';
+             echo $rec['nickname'].' | ';
+             echo $rec['email'].' | ';
+             echo $rec['goiken'];
+             echo '<br/>';
+        }
+    }
+    $dbh = null;
+?>
+</p>
+
 </body>
 </html>
