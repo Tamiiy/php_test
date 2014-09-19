@@ -21,12 +21,24 @@
 
     echo '<ul>';
     while(1){
-         $rec = $stmt->fetch(PDO::FETCH_ASSOC);
+        $rec = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // $sql = 'SELECT COUNT(*) FROM friend_table WHERE area_table_id = \''.$rec['id'].'\'';
+        $sql = 'SELECT COUNT(*) as `count` FROM friend_table WHERE area_table_id = \''.$rec['id'].'\'';
+
+        // echo $sql.'<br/>';
+
+        $stmt2 = $dbh->prepare($sql);
+        $stmt2->execute();
+
+        $count = $stmt2->fetch(PDO::FETCH_ASSOC);
+        // echo $count['COUNT(*)'];
+
          //fetchは、データをひとつひとつとってくる、というDB用語
          if($rec == false) { //データがなくなると、自動的にfalseを返す
             break;
          }
-         echo '<li><a href="friend.php?id='.$rec['id'].'">'.$rec['name'].'</a></li>';
+         echo '<li><a href="friend.php?id='.$rec['id'].'">'.$rec['name'].'</a> ('.$count['count'].')</li>';
     }
     echo '</ul>';
     $dbh = null;
