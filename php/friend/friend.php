@@ -17,6 +17,25 @@
 
     echo '<title>'.$area['name'].'</title>';
 ?>
+<style type="text/css">
+<!--
+.friend_table {
+    margin: 15px 0;
+    border-spacing: 0;
+}
+.friend_table td {
+    border:1px solid #ddd;
+    padding: 5px;
+}
+.friend_table th {
+    background-color: #ff8100;
+    border:1px solid #ddd;
+    padding: 5px;
+    color: #fff;
+}
+-->
+</style>
+
 </head>
 <body>
 <?php
@@ -24,7 +43,11 @@
 
     //追加後のみの処理
     if(isset($_GET['return'])){
-        echo '<p><font color="red">１人追加しました！</font></p>';
+        if($_GET['return'] == 1){
+            echo '<p><font color="red">１人追加しました！</font></p>';
+        }else if($_GET['return'] == 2){
+            echo '<p><font color="red">１人変更しました！</font></p>';
+        }
     }
 
     //性別の人数を出力
@@ -37,24 +60,41 @@
         if($rec == false) { //データがなくなると、自動的にfalseを返す
             break;
         }
-        echo $rec['gender'].'：'.$rec['count'].'人　';
+        if($rec['gender']=='女'){
+            echo '<img src="http://www.bridge-1.jp/material/image/pictogram/toilet_07.jpg" width="20px">';
+        }
+        else{
+            echo '<img src="http://www.bridge-1.jp/material/image/pictogram/toilet_06.jpg" width="20px">';
+        }
+        echo '：'.$rec['count'].'人　';
     }
 
 
     //友達のデータをとってくる
-    $sql = 'SELECT * FROM `friend_table` WHERE area_table_id = \''.$_GET['id'].'\'';
+    $sql = 'SELECT * FROM `friend_table` WHERE area_table_id = \''.$_GET['id'].'\'ORDER BY `friend_table`.`id` ASC';
     $stmt = $dbh->prepare($sql);
     $stmt->execute();
-    echo '<ul>';
+    echo '<table class="friend_table"><tr><th>名前</th><th>性別</th><th>年齢</th><th>編集</th></tr>';
+    $count = 0;
     while(1){
          $rec = $stmt->fetch(PDO::FETCH_ASSOC);
          //fetchは、データをひとつひとつとってくる、というDB用語
          if($rec == false) { //データがなくなると、自動的にfalseを返す
             break;
          }
-         echo '<li>'.$rec['name'].' | '.$rec['gender'].' | '.$rec['age'].'</li>';
+         if($count % 2 == 0){
+             echo '<tr style="background-color:#fff1df;"><td>'.$rec['name'].'</td><td>'.$rec['gender'].'</td><td>'.$rec['age'].'</td>';
+             echo '<td><a href="edit.php?friend_id='.$rec['id'].'">編集</a></td>';
+             echo '</tr>';
+         }
+         else{
+             echo '<tr><td>'.$rec['name'].'</td><td>'.$rec['gender'].'</td><td>'.$rec['age'].'</td>';
+             echo '<td><a href="edit.php?friend_id='.$rec['id'].'">編集</a></td>';
+             echo '</tr>';
+         }
+         $count += 1;
     }
-    echo '</ul>';
+    echo '</table>';
 
     $dbh = null;
 ?>

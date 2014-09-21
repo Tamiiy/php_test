@@ -37,6 +37,7 @@
     ?>
     <input type="hidden" name="area_table_id" value="<?php echo $_GET['id'] ?>">
     <input type="submit" value="追加">
+    <input type="button" value="戻る" onClick="history.back()">
 </form>
 
 <?php
