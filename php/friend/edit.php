@@ -16,13 +16,26 @@
 
     echo '<title>'.$friend['name'].' 編集</title>';
 ?>
+<script type="text/javascript">
+<!--
+// function disp(){
+//     // 「OK」時の処理開始 ＋ 確認ダイアログの表示
+//     if(window.confirm('本当にいいんですね？')){
+//         location.href = "add.php"; // example_confirm.html へジャンプ
+//     }else{
+//         window.alert('キャンセルされました'); // 警告ダイアログを表示
+//     }
+// }
+// -->
+</script>
 </head>
 <body>
 
 <?php
+    // var_dump($friend); これで配列の中身が確認可能（key => データ型 "value"）
     echo '<h1>'.$friend['name'].' 編集</h1>';
 ?>
-<form method="POST" action="edit.php?friend_id=<?php echo $friend['id']; ?>">
+<form method="POST" action="edit.php?friend_id=<?php echo $friend['id']; ?>&return=1">
 <?php
     echo '名前：<input name="edit_name" type="text" value="'.$friend['name'].'"><br/>';
     if($friend['gender']=="男"){
@@ -34,12 +47,12 @@
     }
     echo '年齢：<input name="edit_age" type="text" value='.$friend['age'].'>歳<br/>';
 ?>
-    <input type="submit" value="変更">
+    <input type="submit" value="変更" onClick="return confirm('本当に変更しますか？')">
     <input type="button" value="戻る" onClick="history.back()">
 </form>
 
 <?php
-    if(isset($_POST['edit_name'])){
+    if(isset($_POST['edit_name'], $_POST['edit_gender'], $_POST['edit_age'])){
         $name = $_POST['edit_name'];
         $gender = $_POST['edit_gender'];
         $age = $_POST['edit_age'];
@@ -56,6 +69,8 @@
         header('Location:friend.php?id='.$friend['area_table_id'].'&return=2');
 
         exit();
+    }else if (isset($_GET['return']) && $_GET['return']==1 ) {
+        echo '<font color="red">入力されていない項目があります</font><br/>';
     }
     $dbh = null;
 ?>

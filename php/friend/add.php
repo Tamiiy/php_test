@@ -23,7 +23,7 @@
     echo '<h1>'.$area['name'].'フレンド追加</h1>';
 ?>
 
-<form method="POST" action="add.php?id=<?php echo $_GET['id']; ?>">
+<form method="POST" action="add.php?id=<?php echo $_GET['id']; ?>&return=1">
     名前：<input name="add_name" type="text" placeholder="名前を入力してください"><br/>
     男：<input name="add_gender" type="radio" value="男">　
     女：<input name="add_gender" type="radio" value="女"><br/>
@@ -36,12 +36,12 @@
         // echo '年齢：</select>'
     ?>
     <input type="hidden" name="area_table_id" value="<?php echo $_GET['id'] ?>">
-    <input type="submit" value="追加">
+    <input type="submit" value="追加" onClick="disp()">
     <input type="button" value="戻る" onClick="history.back()">
 </form>
 
 <?php
-    if(isset($_POST['add_name'])){
+    if(isset($_POST['add_name'], $_POST['add_gender'], $_POST['add_age']) && is_numeric($_POST['add_age'])){ //なんかエラーでるけどis_numericは数字以外をはじいてくれる関数
         $name = $_POST['add_name'];
         $gender = $_POST['add_gender'];
         $age = $_POST['add_age'];
@@ -52,14 +52,16 @@
         $stmt->execute();
 
         echo '追加されました！<br/>';
-        echo $name.$gender.$age.$area_id.'<br/>';
-        echo '<a href="friend.php?id='.$area_id.'">'.$area['name'].'に戻る</a>';
+        echo $add['name'].$add['gender'].$add['age'].$add['area_id'].'<br/>';
+        echo '<a href="friend.php?id='.$add['area_id'].'">'.$area['name'].'に戻る</a>';
 
         $dbh = null;
 
-        header('Location:friend.php?id='.$area_id.'&return=1');
+        header('Location:friend.php?id='.$add['area_id'].'&return=1');
 
         exit();
+    }else if (isset($_GET['return']) && $_GET['return']==1 ) {
+        echo '<font color="red">入力されていない項目があります</font><br/>';
     }
     $dbh = null;
 ?>
