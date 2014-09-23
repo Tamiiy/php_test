@@ -5,6 +5,7 @@
 <title>PHP基礎</title>
 </head>
 <body>
+
 <?php
     $user = array(
         'ニックネーム' => htmlspecialchars($_POST['nickname']),
