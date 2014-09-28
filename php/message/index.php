@@ -54,12 +54,35 @@
             mysql_query($sql,$link);
 
         }
+
         //Guard Resend
-        header('Location: http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
+        // header('Location: http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
         //$_SERVER['HTTP_HOST'] == 192.168.0.38
         //$_SERVER['REQUEST_URI'] == /message/index.php
     }
 //////////////////////AfterPOSTSend-End//////////////////////
+
+//////////////////////AfterPOSTSend-End//////////////////////
+    //MessageOut-Start
+    $select = 'SELECT * FROM `message_table` ORDER BY id';
+    $result = mysql_query($select,$link);
+    echo $result;
+    echo mysql_num_rows($result);
+
+    if($result !== false && mysql_num_rows($result)){
+        while ($post = mysql_fetch_assoc($result)) {
+            $list[] = '<li>'
+            .htmlspecialchars($post['name'],ENT_QUOTES,'UTF-8').'：'
+            .htmlspecialchars($post['message'],ENT_QUOTES,'UTF-8').'：'
+            .htmlspecialchars($post['created_at'],ENT_QUOTES,'UTF-8').'</li>';
+        }
+    }
+//////////////////////AfterPOSTSend-End//////////////////////
+
+//////////////////////sqlClose-START//////////////////////
+    mysql_free_result($result);
+    mysql_close($link);
+//////////////////////sqlClose-END//////////////////////
 ?>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML4.01 Transitional//EN">
@@ -108,27 +131,32 @@ if(count($errors)){
 <?php
 //////////////////////MessageBoard-Start//////////////////////
     //MessageOut-Start
-    $select = 'SELECT * FROM `message_table` ORDER BY id';
-    $sql = mysql_query($select,$link);
-    $result = mysql_fetch_assoc($sql);
+    // $select = 'SELECT * FROM `message_table` ORDER BY id';
+    // $result = mysql_query($select,$link);
+    // $result = mysql_fetch_assoc($sql);
 
-    while($result){
-        $list[] = $result;
-        $result = mysql_fetch_assoc($sql);
-    } //$list[]にoutすべきデータが入りました
+    // while($result){
+    //     $list[] = $result;
+    //     $result = mysql_fetch_assoc($sql);
+    // } //$list[]にoutすべきデータが入りました
 
-    echo '<ul>';
-    foreach ($list as $value) {
-         echo '<li>'.$value['name'].'：'.$value['message'].'：'.$value['time'].'：'.$value['created_at'].'</li>';
+    if($list !== null){
+        echo '<ul>';
+        foreach ($list as $value) {
+             echo $value;
+        }
+        echo '</ul>';
     }
-    echo '</ul>';
+
+    // echo '<ul>';
+    // foreach ($list as $value) {
+    //      echo '<li>'.$value['name'].'：'.$value['message'].'：'.$value['time'].'：'.$value['created_at'].'</li>';
+    // }
+    // echo '</ul>';
     //MessageOut-End
 //////////////////////MessageBoard-END//////////////////////
 
-//////////////////////sqlClose-START//////////////////////
-    mysql_free_result($result);
-    mysql_close($link);
-//////////////////////sqlClose-END//////////////////////
+
 ?>
 
 </body>
