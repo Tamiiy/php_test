@@ -1,19 +1,38 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML4.01 Transitional//EN">
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <?php
+//////////////////////sqlOpen-Start//////////////////////
     $dsn = 'mysql:dbname=CampTest;host=localhost'; //Data Source Name
     $user = 'root';
     $password = 'camp2014';
     $dbh = new PDO ($dsn, $user, $password); //Data Base Hundle
     $dbh->query('SET NAMES utf8');
+//////////////////////sqlOpen-End//////////////////////
 
+//////////////////////PrepareFriendTable-Start//////////////////////
     $sql = 'SELECT * FROM `friend_table` WHERE id = \''.$_GET['friend_id'].'\'';
     $stmt = $dbh->prepare($sql);
     $stmt->execute();
     $friend = $stmt->fetch(PDO::FETCH_ASSOC);
+//////////////////////PrepareFriendTable-Start//////////////////////
 
+//////////////////////PrepareAreaTable-Start//////////////////////
+    $sql = 'SELECT * FROM `area_table`';
+    $stmt = $dbh->prepare($sql);
+    $stmt->execute();
+
+    $area = array();
+    $rec = null;
+    while($rec = $stmt->fetch(PDO::FETCH_ASSOC)){
+        $area[] = $rec;
+    }
+//////////////////////PrepareAreaTable-Start//////////////////////
+?>
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<?php
     echo '<title>'.$friend['name'].' 編集</title>';
 ?>
 <script type="text/javascript">
@@ -46,6 +65,7 @@
         echo '女：<input name="edit_gender" type="radio" value="女" checked><br/>';
     }
     echo '年齢：<input name="edit_age" type="text" value='.$friend['age'].'>歳<br/>';
+
 ?>
     <input type="submit" value="変更" onClick="return confirm('本当に変更しますか？')">
     <input type="button" value="戻る" onClick="history.back()">
@@ -67,8 +87,8 @@
         $dbh = null;
 
         header('Location:friend.php?id='.$friend['area_table_id'].'&return=2');
-
         exit();
+
     }else if (isset($_GET['return']) && $_GET['return']==1 ) {
         echo '<font color="red">入力されていない項目があります</font><br/>';
     }

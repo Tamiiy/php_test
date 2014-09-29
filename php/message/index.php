@@ -1,12 +1,5 @@
 <?php
 //////////////////////sqlOpen-Start//////////////////////
-    //データベースに接続①：mySQL以外にも対応
-    // $dsn = 'mysql:dbname=MessageBoard;host=localhost'; //Data Source Name
-    // $user = 'root';
-    // $password = 'camp2014';
-    // $dbh = new PDO ($dsn, $user, $password); //Data Base Hundle
-    // $dbh->query('SET NAMES utf8');
-
     //データベースに接続②：mysql専用
     $link = mysql_connect('localhost','root','camp2014');
     if(!$link){
@@ -25,34 +18,50 @@
 //////////////////////AfterPOSTSend-Start//////////////////////
     if($_SERVER['REQUEST_METHOD'] === 'POST') { //'==='は'=='より厳密(文字列と数字など型も含め判別)
 
-        //nameCheck
-        $name = null;
-        if(!isset($_POST['name']) || !strlen($_POST['name'])){
-            $errors['name'] = '名前を入力してください';
-        }else if (strlen($_POST['name']) > 20) {
-            $errors['name'] = '名前は20文字以内で入力してください';
-        }else {
-            $name = $_POST['name'];
+        //checkFunction
+        function Check($name, $contents, &$errors, $error_name, $count){
+            $rec = null;
+            if(!isset($contents) || !strlen($contents)){
+                $errors["$error_name"] = $name.'を入力してください';
+            }else if (strlen($contents) > $count) {
+                $errors["$error_name"] = $name.'は'.$count.'文字以内で入力してください';
+            }else {
+                $rec = $contents;
+                return $rec;
+            }
         }
+
+        $name = Check('名前', $_POST['name'], $errors, 'name', 20);
+        $message = Check('メッセージ', $_POST['message'], $errors, 'message', 200);
+
+        //nameCheck
+        // $name = null;
+        // if(!isset($_POST['name']) || !strlen($_POST['name'])){
+        //     $errors['name'] = '名前を入力してください';
+        // }else if (strlen($_POST['name']) > 20) {
+        //     $errors['name'] = '名前は20文字以内で入力してください';
+        // }else {
+        //     $name = $_POST['name'];
+        // }
 
         //messageCheck
-        $message = null;
-        if(!isset($_POST['message']) || !strlen($_POST['message'])){
-            $errors['message'] = 'メッセージを入力してください';
-        }else if (strlen($_POST['message']) > 200) {
-            $errors['message'] = 'メッセージは200文字以内で入力してください';
-        }else {
-            $message = $_POST['message'];
-        }
+        // $message = null;
+        // if(!isset($_POST['message']) || !strlen($_POST['message'])){
+        //     $errors['message'] = 'メッセージを入力してください';
+        // }else if (strlen($_POST['message']) > 200) {
+        //     $errors['message'] = 'メッセージは200文字以内で入力してください';
+        // }else {
+        //     $message = $_POST['message'];
+        // }
 
         //SaveDB
+        // var_dump($errors);
         if(count($errors) === 0){
             $sql = 'INSERT INTO `message_table` (`name`,`message`,`created_at`) VALUES (
                 \''.mysql_real_escape_string($name).'\',
                 \''.mysql_real_escape_string($message).'\',
                 \''.date('Y-m-d H:i:s').'\')';
             mysql_query($sql,$link);
-
         }
 
         //Guard Resend
@@ -66,10 +75,9 @@
     //MessageOut-Start
     $select = 'SELECT * FROM `message_table` ORDER BY id';
     $result = mysql_query($select,$link);
-    echo $result;
-    echo mysql_num_rows($result);
 
-    if($result !== false && mysql_num_rows($result)){
+    if($result !== false && mysql_num_rows($result)){ //0件だった場合にrowsが必要
+        $list = array();
         while ($post = mysql_fetch_assoc($result)) {
             $list[] = '<li>'
             .htmlspecialchars($post['name'],ENT_QUOTES,'UTF-8').'：'
@@ -106,9 +114,11 @@ function CountDownLength( idn, str, mnum ) {
 </head>
 <body>
 <h1>ひとこと掲示板</h1>
+
 <?php
 //////////////////////ErrorOutput-START//////////////////////
-if(count($errors)){
+// var_dump($errors);
+if(count($errors) !== 0){
     echo '<ul>';
     foreach($errors as $error){
         echo '<li><font color="red">';
@@ -130,16 +140,6 @@ if(count($errors)){
 
 <?php
 //////////////////////MessageBoard-Start//////////////////////
-    //MessageOut-Start
-    // $select = 'SELECT * FROM `message_table` ORDER BY id';
-    // $result = mysql_query($select,$link);
-    // $result = mysql_fetch_assoc($sql);
-
-    // while($result){
-    //     $list[] = $result;
-    //     $result = mysql_fetch_assoc($sql);
-    // } //$list[]にoutすべきデータが入りました
-
     if($list !== null){
         echo '<ul>';
         foreach ($list as $value) {
@@ -147,16 +147,7 @@ if(count($errors)){
         }
         echo '</ul>';
     }
-
-    // echo '<ul>';
-    // foreach ($list as $value) {
-    //      echo '<li>'.$value['name'].'：'.$value['message'].'：'.$value['time'].'：'.$value['created_at'].'</li>';
-    // }
-    // echo '</ul>';
-    //MessageOut-End
 //////////////////////MessageBoard-END//////////////////////
-
-
 ?>
 
 </body>
