@@ -22,9 +22,9 @@
         function Check($name, $contents, &$errors, $error_name, $count){
             $rec = null;
             if(!isset($contents) || !strlen($contents)){
-                $errors["$error_name"] = $name.'を入力してください';
+                $errors[$error_name] = $name.'を入力してください';
             }else if (strlen($contents) > $count) {
-                $errors["$error_name"] = $name.'は'.$count.'文字以内で入力してください';
+                $errors[$error_name] = $name.'は'.$count.'文字以内で入力してください';
             }else {
                 $rec = $contents;
                 return $rec;
@@ -55,7 +55,7 @@
         // }
 
         //SaveDB
-        // var_dump($errors);
+        var_dump($errors);
         if(count($errors) === 0){
             $sql = 'INSERT INTO `message_table` (`name`,`message`,`created_at`) VALUES (
                 \''.mysql_real_escape_string($name).'\',
