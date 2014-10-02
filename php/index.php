@@ -26,9 +26,14 @@
 // }
 // -->
 </script>
-
+    <link href="css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="container">
+    <ul class="nav nav-tabs" role="tablist">
+      <li class="active"><a href="/">GOIKEN</a></li>
+      <li><a href="/friend/">FRIEND</a></li>
+      <li><a href="/message/">BBS</a></li>
+    </ul>
 <form name="test" method="post" action="check.php" onSubmit="return check()">
     <p>ニックネームを入力してください<br/>
     <input name="nickname" type="text" style="width:100px" maxlength="20">

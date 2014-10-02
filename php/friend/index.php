@@ -1,8 +1,14 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML4.01 Transitional//EN">
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>都道府県INDEX</title>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>都道府県INDEX</title>
+
+    <!-- Bootstrap -->
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
 <style type="text/css">
 <!--
 .friend_table {
@@ -19,16 +25,27 @@
     padding: 5px;
     color: #fff;
 }
+.col-md-3 {
+    padding-bottom:5px;
+    padding-top:5px;
+}
 -->
 </style>
 </head>
-<body>
+<body class="container">
+    <ul class="nav nav-tabs" role="tablist">
+      <li><a href="/">GOIKEN</a></li>
+      <li class="active"><a href="/friend/">FRIEND</a></li>
+      <li><a href="/message/">BBS</a></li>
+    </ul>
 <h1>都道府県INDEX</h1>
 <p>
 
-<form method="POST" action="index.php">
-    <input type="text" name="search">
-    <input type="submit" value="検索" onClick="disp()">
+<form method="POST" action="index.php" class="clearfix" style="margin-bottom:10px;">
+<div class="col-xs-4">
+    <input class="form-control" type="text" name="search" placeholder="Enter Friend Name">
+</div>
+    <input class="btn btn-primary" type="submit" value="検索" onClick="disp()">
 </form>
 <?php
 
@@ -83,7 +100,7 @@
             header('Location:edit.php?friend_id='.$rec['id']);
         }else{
             echo '検索結果：'.$count['count'].'件<br />';
-            echo '<table class="friend_table"><tr><th>名前</th><th>性別</th><th>年齢</th><th>編集</th></tr>';
+            echo '<table class="friend_table table table-hover"><tr><th>名前</th><th>性別</th><th>年齢</th><th>編集</th></tr>';
             $table = 0;
             foreach ($search_list as $search_value) {
                  echo '<tr ';
@@ -104,7 +121,6 @@
     $stmt->execute();
     //データの集合を結果セットという.surveyの全てのデータが結果セットになっている
 
-    echo '<ul>';
     $img = 2;
     $img = sprintf("%03d", $img);
     while(1){
@@ -125,7 +141,7 @@
          if($rec == false) { //データがなくなると、自動的にfalseを返す
             break;
          }
-         echo '<li style="list-style:none"><img src="http://members.just-size.net/pflag/list1.files/image'.$img.'.gif" width="30px"> <a href="friend.php?id='.$rec['id'].'">'.$rec['name'].'</a> ('.$count['count'].')</li>';
+         echo '<div class="col-md-3"><img src="http://members.just-size.net/pflag/list1.files/image'.$img.'.gif" width="30px"> <a href="friend.php?id='.$rec['id'].'">'.$rec['name'].'</a> ('.$count['count'].')</div>';
          $img += 2;
          $img = sprintf("%03d", $img);
          if ($rec['id'] == 13){
@@ -133,12 +149,15 @@
              $img = sprintf("%03d", $img);
          }
     }
-    echo '</ul>';
 //////////////////////NameArea-END//////////////////////
 
     $dbh = null;
 ?>
 </p>
 
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="../js/bootstrap.min.js"></script>
 </body>
 </html>

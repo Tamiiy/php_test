@@ -51,21 +51,22 @@
     }
 
     //性別の人数を出力
-    $sql = 'SELECT gender, count(id) as count FROM `friend_table` WHERE area_table_id =\''.$_GET['id'].'\' group by gender';
+    $sql = 'SELECT gender, count(gender) as count FROM `friend_table` WHERE area_table_id =\''.$_GET['id'].'\' group by gender';
     $stmt = $dbh->prepare($sql);
     $stmt->execute();
+
     while(1){
         $rec = $stmt->fetch(PDO::FETCH_ASSOC);
         //fetchは、データをひとつひとつとってくる、というDB用語
         if($rec == false) { //データがなくなると、自動的にfalseを返す
             break;
         }
-        if($rec['gender']=='女'){
+        if($rec['gender'] == '女'){
             echo '<img src="http://www.bridge-1.jp/material/image/pictogram/toilet_07.jpg" width="20px">';
+            echo '：'.$rec['count'].'人';
+            $flag = 1;
         }
-        else{
-            echo '<img src="http://www.bridge-1.jp/material/image/pictogram/toilet_06.jpg" width="20px">';
-        }
+        echo '<img src="http://www.bridge-1.jp/material/image/pictogram/toilet_06.jpg" width="20px">';
         echo '：'.$rec['count'].'人　';
     }
 
