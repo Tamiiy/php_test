@@ -123,6 +123,8 @@
 
     $img = 2;
     $img = sprintf("%03d", $img);
+    echo '<div class="col-md-3">';
+    echo '<ul class="list-group">';
     while(1){
         $rec = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -141,7 +143,7 @@
          if($rec == false) { //データがなくなると、自動的にfalseを返す
             break;
          }
-         echo '<div class="col-md-3"><img src="http://members.just-size.net/pflag/list1.files/image'.$img.'.gif" width="30px"> <a href="friend.php?id='.$rec['id'].'">'.$rec['name'].'</a> ('.$count['count'].')</div>';
+         echo '<li class="list-group-item"><img src="http://members.just-size.net/pflag/list1.files/image'.$img.'.gif" width="20px"> <a href="friend.php?id='.$rec['id'].'">'.$rec['name'].'</a><span class="badge">'.$count['count'].'</span></li>';
          $img += 2;
          $img = sprintf("%03d", $img);
          if ($rec['id'] == 13){
@@ -149,8 +151,12 @@
              $img = sprintf("%03d", $img);
          }
     }
+    echo '</ul></div>';
 //////////////////////NameArea-END//////////////////////
 
+//////////////////////Friend.php-START//////////////////////
+
+//////////////////////Friend.php-END//////////////////////
     $dbh = null;
 ?>
 </p>
