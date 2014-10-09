@@ -1,3 +1,35 @@
+<?php
+//////////////////////sqlOpen-Start//////////////////////
+    $dsn = 'mysql:dbname=CampTest;host=localhost'; //Data Source Name
+    $user = 'root';
+    $password = 'camp2014';
+    $dbh = new PDO ($dsn, $user, $password); //Data Base Hundle
+    $dbh->query('SET NAMES utf8');
+//////////////////////sqlOpen-End//////////////////////
+
+//////////////////////SearchPrepare-START//////////////////////
+if (isset($_POST['search'])){
+    $sql = 'SELECT * FROM `friend_table` WHERE name LIKE \'%'.$_POST['search'].'%\';';
+    $stmt = $dbh->prepare($sql);
+    $stmt->execute();
+
+    $rec = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    $sql_count = 'SELECT count(*) as count FROM `friend_table` WHERE name LIKE \'%'.$_POST['search'].'%\';';
+    $stmt_sql_count = $dbh->prepare($sql_count);
+    $stmt_sql_count->execute();
+
+    $count = $stmt_sql_count->fetch(PDO::FETCH_ASSOC);
+
+    while($rec){
+        $search_list[] = $rec; //★search_list★
+        $rec = $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+}
+//////////////////////SearchPrepare-END//////////////////////
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,73 +65,45 @@
 </style>
 </head>
 <body class="container">
-    <ul class="nav nav-tabs" role="tablist">
-      <li><a href="/">GOIKEN</a></li>
-      <li class="active"><a href="/friend/">FRIEND</a></li>
-      <li><a href="/message/">BBS</a></li>
-    </ul>
+<ul class="nav nav-tabs" role="tablist">
+    <li><a href="/">GOIKEN</a></li>
+    <li class="active"><a href="/friend/">FRIEND</a></li>
+    <li><a href="/message/">BBS</a></li>
+</ul>
 <h1>都道府県INDEX</h1>
 
 
 <form method="POST" action="index.php" class="clearfix" style="margin-bottom:10px;">
-<div class="col-xs-4">
-    <input class="form-control" type="text" name="search" placeholder="Enter Friend Name">
-</div>
+    <div class="col-xs-4">
+        <input class="form-control" type="text" name="search" placeholder="Enter Friend Name">
+    </div>
     <input class="btn btn-primary" type="submit" value="検索" onClick="disp()">
 </form>
 
 <div class="clearfix" style="padding-top:10px;">
+    <div class="col-md-9" style="float:right;">
 <?php
-
-//////////////////////sqlOpen-Start//////////////////////
-    $dsn = 'mysql:dbname=CampTest;host=localhost'; //Data Source Name
-    $user = 'root';
-    $password = 'camp2014';
-    $dbh = new PDO ($dsn, $user, $password); //Data Base Hundle
-    $dbh->query('SET NAMES utf8');
-//////////////////////sqlOpen-End//////////////////////
-
 //////////////////////NameSearch-Start//////////////////////
-    echo '<div class="col-md-9" style="float:right;">';
-
-    if (isset($_POST['search'])){
-
-    // $search_list = sqlSelect('SELECT * FROM `friend_table` WHERE name LIKE \'%'.$_POST['search'].'%\'');
-
-        $sql = 'SELECT * FROM `friend_table` WHERE name LIKE \'%'.$_POST['search'].'%\';';
-        $sql_count = 'SELECT count(*) as count FROM `friend_table` WHERE name LIKE \'%'.$_POST['search'].'%\';';
-        $stmt = $dbh->prepare($sql);
-        $stmt->execute();
-
-        $rec = $stmt->fetch(PDO::FETCH_ASSOC);
-        while($rec){
-            $search_list[] = $rec;
-            $rec = $stmt->fetch(PDO::FETCH_ASSOC);
+if(isset($search_list)){
+    if($count['count'] == 0){
+        echo '<font color="red">ヒットしませんでした</font><br/>';
+    }else if($count['count'] == 1){
+        header('Location:edit.php?friend_id='.$rec['id']);
+    }else{
+        echo '検索結果：'.$count['count'].'件<br />';
+        echo '<table class="friend_table table"><tr><th>名前</th><th>性別</th><th>年齢</th><th>編集</th></tr>';
+        $table = 0;
+        foreach ($search_list as $search_value) {
+            echo '<tr ';
+            if($table % 2 == 0){echo 'style="background-color:#fff1df;"';}
+            echo '><td>'.$search_value['name'].'</td><td>'.$search_value['gender'].'</td><td>'.$search_value['age'].'</td>';
+            echo '<td><a href="edit.php?friend_id='.$search_value['id'].'">編集</a></td>';
+            echo '</tr>';
+            $table += 1;
         }
-
-        $stmt_sql_count = $dbh->prepare($sql_count);
-        $stmt_sql_count->execute();
-        $count = $stmt_sql_count->fetch(PDO::FETCH_ASSOC);
-
-        if($count['count'] == 0){
-            echo '<font color="red">ヒットしませんでした</font><br/>';
-        }else if($count['count'] == 1){
-            header('Location:edit.php?friend_id='.$rec['id']);
-        }else{
-            echo '検索結果：'.$count['count'].'件<br />';
-            echo '<table class="friend_table table"><tr><th>名前</th><th>性別</th><th>年齢</th><th>編集</th></tr>';
-            $table = 0;
-            foreach ($search_list as $search_value) {
-                echo '<tr ';
-                if($table % 2 == 0){echo 'style="background-color:#fff1df;"';}
-                echo '><td>'.$search_value['name'].'</td><td>'.$search_value['gender'].'</td><td>'.$search_value['age'].'</td>';
-                echo '<td><a href="edit.php?friend_id='.$search_value['id'].'">編集</a></td>';
-                echo '</tr>';
-                $table += 1;
-            }
-            echo '</table>';
-        }
+        echo '</table>';
     }
+}
 //////////////////////NameSearch-End//////////////////////
 
 
