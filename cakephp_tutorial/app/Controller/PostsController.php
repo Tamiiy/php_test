@@ -17,7 +17,6 @@ public $components = array('Session');
         if (!$id) {
             throw new NotFoundException(__('Invalid post'));
         }
-
         $post = $this->Post->findById($id);
         if (!$post) {
             throw new NotFoundException(__('Invalid post'));
