@@ -1,6 +1,5 @@
 <?php
 class CategoriesController extends AppController {
-public $uses = array('Category','Post');
 public $helpers = array('Html', 'Form', 'Session');
 public $components = array('Session');
     public function index() {
@@ -15,21 +14,20 @@ public $components = array('Session');
     }
 
     public function view($id) {
-        $posts = $this->Post->getPostsWithCategoryId($id);
-        // echo '<pre>';
-        // var_dump($posts);
-        // echo '</pre>';
-
+        $posts = $this->Category->getPostsWithCategoryId($id);
+        echo '<pre>';
+        var_dump($posts);
+        echo '</pre>';
 
         if (!$id) { //識別子
             throw new NotFoundException(__('Invalid category'));
         }
 
-        $category = $this->Category->findById($id);
-        if (!$category) {
-            throw new NotFoundException(__('Invalid category'));
-        }
-        $this->set('category', $category);
+        // $category = $this->Category->findById($id);
+        // if (!$category) {
+        //     throw new NotFoundException(__('Invalid category'));
+        // }
+        // $this->set('category', $category);
         $this->set('posts', $posts);
     }
 
@@ -47,24 +45,27 @@ public $components = array('Session');
     public function edit($id = null) {
         if (!$id) {
             throw new NotFoundException(__('Invalid category'));
+            //Exceptionは処理を止める(エラーだから)
         }
 
         $category = $this->Category->findById($id);
-        if (!$category) {
+        if (!$category) { //対象idのデータがデータベースになかったら
             throw new NotFoundException(__('Invalid category'));
         }
 
-        if ($this->request->is(array('post', 'put'))) {
-            $this->Category->id = $id;
+        if ($this->request->is(array('post', 'put'))) { //postリクエストが入ってきたら(編集を終えてsaveボタンを押したら)
+            $this->Category->id = $id; //今編集中のデータをモデルに伝えている
             if ($this->Category->save($this->request->data)) {
-                $this->Session->setFlash(__('Your category has been updated.'));
-                return $this->redirect(array('action' => 'index'));
+                $this->Session->setFlash(__('Your category has been updated.')); //Sessionはブラウザのタブの情報まで持っているので、ページを変えても保持できる。setFlashがどこまで表示するかを定義している。
+                $this->redirect(array('action' => 'index'));
+                return;
+                //return で処理が終わる！ので下のsetFlashは呼ばれない
             }
             $this->Session->setFlash(__('Unable to update your category.'));
         }
 
-        if (!$this->request->data) {
-            $this->request->data = $category;
+        if (!$this->request->data) { //$_requestはGETもPOSTもない→単純にeditに入ってきたとき
+            $this->request->data = $category; //form内に文字が入る
         }
     }
 
