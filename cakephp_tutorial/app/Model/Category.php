@@ -22,6 +22,7 @@ class Category extends AppModel {
         // ));
 
         $posts = $this->findById($categoryId);
+	$this->log( $this->getDataSource()->getLog(), LOG_DEBUG);
         return $posts;
     }
 
